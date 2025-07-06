@@ -47,9 +47,9 @@ exports.getAllUsers = async (req, res, next) => {
   }
 };
 
-exports.getUserById = async (req, res, next) => {
+exports.getUserById = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.query.userId || req.user.id;
 
     const user = await userService.getUserById(userId);
 
@@ -63,7 +63,7 @@ exports.getUserById = async (req, res, next) => {
 
 exports.updateUser = async (req, res, next) => {
   try {
-    const userId = req.params.id;
+    const userId = req.query.id;
     const { userData } = req.body;
 
     const updatedUser = await userService.updateUser(userId, userData);
@@ -81,7 +81,7 @@ exports.updateUser = async (req, res, next) => {
 
 exports.deleteUser = async (req, res, next) => {
   try {
-    const userId = req.params.id;
+    const userId = req.query.id;
 
     await userService.deleteUser(userId);
 

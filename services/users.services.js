@@ -12,7 +12,7 @@ const generateToken = (payload) => {
 };
 
 const hashPassword = async (password) => {
-  const saltRounds = 10;
+  const saltRounds = process.env.JWT_SALT_ROUNDS || 10;
   return await bcrypt.hash(password, saltRounds);
 };
 
