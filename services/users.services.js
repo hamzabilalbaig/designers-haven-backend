@@ -2,6 +2,8 @@ const bcrypt = require("bcryptjs");
 const db = require("../models");
 const jwt = require("jsonwebtoken");
 
+const { fn, col } = require("sequelize");
+
 const userDb = db.Users;
 
 const generateToken = (payload) => {
@@ -12,12 +14,12 @@ const generateToken = (payload) => {
 };
 
 const hashPassword = async (password) => {
-  const saltRounds = process.env.JWT_SALT_ROUNDS || 10;
+  const saltRounds = 10;
   return await bcrypt.hash(password, saltRounds);
 };
 
 exports.createUser = async (userData) => {
-  if (!userData.email || !userData.password || !userData.firstName) {
+  if (!userData.email || !userData.password || !userData.fullName) {
     const error = new Error("Content cannot be empty!");
     error.status = 400;
     throw error;
@@ -74,9 +76,22 @@ exports.login = async (email, password) => {
   return { user, token };
 };
 
-exports.getAllUsers = async () => {
+exports.getAllDesigners = async () => {
   const users = await userDb.findAll({
-    attributes: { exclude: ["password"] },
+    where: { role: "designer" },
+    attributes: {
+      exclude: ["password"],
+      include: [[fn("COUNT", col("products.id")), "productCount"]],
+    },
+    include: [
+      {
+        model: db.Products,
+        as: "products",
+        attributes: [],
+        required: false,
+      },
+    ],
+    group: ["Users.id"],
   });
 
   if (!users) {

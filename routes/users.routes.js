@@ -5,11 +5,18 @@ const userController = require("../controllers/users.controllers");
 
 const { isAuthenticated, isAdmin } = require("../middlewares/auth.middleware");
 
-router.post("/register", userController.createUser);
+router.post("/create", userController.createUser);
 router.post("/login", userController.login);
-router.get("/getAllUsers", userController.getAllUsers);
+router.get("/getAllDesigners", isAuthenticated, userController.getAllDesigners);
 router.get("/getUserById", isAuthenticated, userController.getUserById);
-router.put("/updateUser", isAuthenticated, userController.updateUser);
-router.delete("/deleteUser", isAuthenticated, userController.deleteUser);
+router.put("/update", isAuthenticated, userController.updateUser);
+router.delete("/delete", isAuthenticated, isAdmin, userController.deleteUser);
+
+router.get(
+  "/admin/metrics",
+  isAuthenticated,
+  isAdmin,
+  userController.getDashboardMetrics
+);
 
 module.exports = router;
