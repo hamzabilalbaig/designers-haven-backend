@@ -5,6 +5,7 @@ const cors = require("cors");
 
 const userRoutes = require("./routes/users.routes");
 const productRoutes = require("./routes/products.routes");
+const uploadRoutes = require("./routes/upload.routes");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -12,6 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/api/user", userRoutes);
 app.use("/api/product", productRoutes);
+app.use("/api/aws", uploadRoutes);
 
 app.get("/", (req, res) => res.send("Designer Haven APIs is running!"));
 

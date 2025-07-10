@@ -81,3 +81,21 @@ exports.deleteProduct = async (req, res, next) => {
     });
   }
 };
+
+exports.getProductsByBrand = async (req, res) => {
+  const brandId = req.query.brandId;
+  try {
+    const products = await productsDb.findAll({
+      where: { brandId: brandId },
+      include: [{ model: db.Users, as: "store" }],
+    });
+    if (products.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "No products found for this brand!" });
+    }
+    return res.status(200).json(products);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};

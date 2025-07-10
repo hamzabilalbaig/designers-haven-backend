@@ -136,6 +136,35 @@ exports.deleteUser = async (req, res, next) => {
   }
 };
 
+exports.updatePassword = async (req, res) => {
+  try {
+    const { userId, oldPassword, newPassword } = req.body;
+
+    if (!userId || !oldPassword || !newPassword) {
+      return res.status(400).json({ error: "Required fields are missing!" });
+    }
+
+    const user = await userDb.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found!" });
+    }
+
+    const isMatch = await comparePassword(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: "Old password is incorrect!" });
+    }
+
+    const hashedNewPassword = await hashPassword(newPassword);
+    user.password = hashedNewPassword;
+    await user.save();
+
+    res.status(200).json({ message: "Password changed successfully!" });
+  } catch (error) {
+    console.error("Error changing password:", error);
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
 exports.getDashboardMetrics = async (req, res) => {
   try {
     const startOfMonth = new Date();
@@ -192,5 +221,51 @@ exports.getDashboardMetrics = async (req, res) => {
   } catch (err) {
     console.error("Error fetching dashboard metrics:", err);
     res.status(500).json({ message: "Server Error" });
+  }
+};
+
+exports.getDesignerMetrics = async (req, res) => {
+  const designerId = req.query.designerId;
+
+  try {
+    const user = await userDb.findByPk(designerId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const productStatuses = await productsDb.findAll({
+      where: { brandId: designerId },
+      attributes: ["status"],
+      raw: true,
+    });
+
+    const statusCount = {
+      active: 0,
+      pending: 0,
+      rejected: 0,
+    };
+
+    productStatuses.forEach((p) => {
+      const status = p.status?.toLowerCase();
+      if (statusCount.hasOwnProperty(status)) {
+        statusCount[status]++;
+      }
+    });
+
+    const lastProduct = await productsDb.findOne({
+      where: { brandId: designerId },
+      order: [["createdAt", "DESC"]],
+    });
+
+    const lastProductStatus = lastProduct?.status || "N/A";
+    const lastProductTitle = lastProduct?.name || "N/A";
+
+    res.json({
+      ...statusCount,
+      lastProductStatus,
+      lastProductTitle,
+      accountStatus: user.status,
+    });
+  } catch (error) {
+    console.error("Error fetching designer metrics:", error);
+    res.status(500).json({ error: "Something went wrong" });
   }
 };
