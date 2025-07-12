@@ -36,15 +36,6 @@ exports.createUser = async (req, res) => {
     const hashedPassword = await hashPassword(userData.password);
     userData.password = hashedPassword;
 
-    if (userData.location?.lat && userData.location?.lng) {
-      const { lat, lng } = userData.location;
-
-      userData.location = {
-        type: "Point",
-        coordinates: [lng, lat],
-      };
-    }
-
     const user = await userDb.create(userData);
     delete user.dataValues.password;
 

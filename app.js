@@ -8,8 +8,8 @@ const productRoutes = require("./routes/products.routes");
 const uploadRoutes = require("./routes/upload.routes");
 
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
 
 app.use("/api/user", userRoutes);
 app.use("/api/product", productRoutes);
