@@ -77,8 +77,13 @@ exports.login = async (email, password) => {
 };
 
 exports.getAllDesigners = async (status) => {
+  const designerWhere = {};
+
+  if (status) {
+    designerWhere.status = status;
+  }
   const users = await userDb.findAll({
-    where: { role: "designer", status: status ?? undefined },
+    where: { role: "designer", ...designerWhere },
     attributes: {
       exclude: ["password"],
       include: [[fn("COUNT", col("products.id")), "productCount"]],

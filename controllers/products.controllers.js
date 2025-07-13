@@ -25,16 +25,24 @@ exports.createProduct = async (req, res) => {
 exports.getAllProducts = async (req, res) => {
   const status = req.query.status || null;
 
+  const productWhere = {};
+  const storeWhere = {};
+
+  if (status) {
+    productWhere.status = status;
+    storeWhere.status = status;
+  }
+
   try {
     const products = await productsDb.findAll({
-      where: { status: status ?? undefined },
-      order: [["createdAt", "DESC"]],
+      where: productWhere,
       include: [
         {
           model: db.Users,
           as: "store",
+          where: storeWhere,
           attributes: ["id", "fullName", "email", "avatar"],
-          required: false,
+          required: true,
         },
       ],
     });
