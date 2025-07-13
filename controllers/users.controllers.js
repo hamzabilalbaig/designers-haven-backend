@@ -116,6 +116,15 @@ exports.getDesignerById = async (req, res) => {
           "phone",
         ],
       },
+      include: [
+        {
+          model: db.Products,
+          as: "products",
+          attributes: {
+            exclude: ["createdAt", "updatedAt", "deletedAt"],
+          },
+        },
+      ],
     });
 
     if (!designer) {
