@@ -24,6 +24,9 @@ exports.createUser = async (req, res) => {
       return;
     }
 
+    userData.email = userData.email.toLowerCase();
+    userData.role = userData.role.toLowerCase();
+
     const emailExists = await userDb.findOne({
       where: { email: userData.email },
     });
@@ -68,8 +71,9 @@ exports.login = async (req, res, next) => {
 };
 
 exports.getAllDesigners = async (req, res) => {
+  const status = req.query.status || null;
   try {
-    const users = await userService.getAllDesigners();
+    const users = await userService.getAllDesigners(status);
 
     res.status(200).send(users);
   } catch (error) {

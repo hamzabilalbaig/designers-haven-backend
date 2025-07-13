@@ -23,9 +23,20 @@ exports.createProduct = async (req, res) => {
 };
 
 exports.getAllProducts = async (req, res) => {
+  const status = req.query.status || null;
+
   try {
     const products = await productsDb.findAll({
-      include: [{ model: db.Users, as: "store" }],
+      where: { status: status ?? undefined },
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: db.Users,
+          as: "store",
+          attributes: ["id", "fullName", "email", "avatar"],
+          required: false,
+        },
+      ],
     });
     return res.status(200).json(products);
   } catch (error) {
@@ -37,7 +48,13 @@ exports.getProductById = async (req, res) => {
   const productId = req.query.productId;
   try {
     const product = await productsDb.findByPk(productId, {
-      include: [{ model: db.Users, as: "store" }],
+      include: [
+        {
+          model: db.Users,
+          as: "store",
+          attributes: ["id", "fullName", "email", "avatar"],
+        },
+      ],
     });
     if (!product) {
       return res.status(400).json({ error: "Product not found!" });
@@ -84,9 +101,15 @@ exports.deleteProduct = async (req, res, next) => {
 
 exports.getProductsByBrand = async (req, res) => {
   const brandId = req.query.brandId;
+  const status = req.query.status || null;
+
+  if (!brandId) {
+    return res.status(400).json({ error: "Brand ID is required!" });
+  }
+
   try {
     const products = await productsDb.findAll({
-      where: { brandId: brandId },
+      where: { brandId: brandId, status: status ?? undefined },
       include: [{ model: db.Users, as: "store" }],
     });
     if (products.length === 0) {
