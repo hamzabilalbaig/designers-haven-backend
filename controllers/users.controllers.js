@@ -97,6 +97,37 @@ exports.getUserById = async (req, res) => {
   }
 };
 
+exports.getDesignerById = async (req, res) => {
+  try {
+    const designerId = req.query.designerId;
+
+    if (!designerId) {
+      return res.status(400).json({ error: "Designer ID is required!" });
+    }
+
+    const designer = await userDb.findByPk(designerId, {
+      attributes: {
+        exclude: [
+          "password",
+          "createdAt",
+          "updatedAt",
+          "birthdate",
+          "role",
+          "phone",
+        ],
+      },
+    });
+
+    if (!designer) {
+      return res.status(404).json({ error: "Designer not found!" });
+    }
+
+    res.status(200).json(designer);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 exports.updateUser = async (req, res, next) => {
   try {
     const userId = req.body.userId;

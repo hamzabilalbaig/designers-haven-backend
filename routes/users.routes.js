@@ -9,6 +9,7 @@ router.post("/create", userController.createUser);
 router.post("/login", userController.login);
 router.get("/getAllDesigners", userController.getAllDesigners);
 router.get("/getUserById", isAuthenticated, userController.getUserById);
+router.get("/getDesignerById", userController.getDesignerById);
 router.put("/update", isAuthenticated, userController.updateUser);
 router.delete("/delete", isAuthenticated, isAdmin, userController.deleteUser);
 router.put("/updatePassword", isAuthenticated, userController.updatePassword);

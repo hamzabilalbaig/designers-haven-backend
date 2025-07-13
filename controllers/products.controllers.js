@@ -41,7 +41,7 @@ exports.getAllProducts = async (req, res) => {
           model: db.Users,
           as: "store",
           where: storeWhere,
-          attributes: ["id", "fullName", "email", "avatar"],
+          attributes: ["id", "fullName", "email", "avatar", "whatsApp"],
           required: true,
         },
       ],
@@ -60,7 +60,7 @@ exports.getProductById = async (req, res) => {
         {
           model: db.Users,
           as: "store",
-          attributes: ["id", "fullName", "email", "avatar"],
+          attributes: ["id", "fullName", "email", "avatar", "whatsApp"],
         },
       ],
     });
