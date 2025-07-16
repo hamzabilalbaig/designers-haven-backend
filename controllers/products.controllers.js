@@ -115,9 +115,17 @@ exports.getProductsByBrand = async (req, res) => {
     return res.status(400).json({ error: "Brand ID is required!" });
   }
 
+  const productWhere = {
+    brandId: brandId,
+  };
+
+  if (status) {
+    productWhere.status = status;
+  }
+
   try {
     const products = await productsDb.findAll({
-      where: { brandId: brandId, status: status ?? undefined },
+      where: productWhere,
       include: [{ model: db.Users, as: "store" }],
     });
     if (products.length === 0) {
