@@ -7,10 +7,19 @@ const Users = db.Users;
 
 exports.createProduct = async (req, res) => {
   const productData = req.body;
+  const userId = req.user.id;
   try {
     if (!productData.name || !productData.price || !productData.brandId) {
       res.status(400).json({ error: "Required fields are missing!" });
       return;
+    }
+
+    const user = await Users.findByPk(userId);
+
+    if (user.role === "designer" && user.status !== "active") {
+      return res.status(400).json({
+        error: "Your account is not active. You cannot create products.",
+      });
     }
 
     const product = await productsDb.create(productData);
@@ -76,10 +85,20 @@ exports.getProductById = async (req, res) => {
 exports.updateProduct = async (req, res) => {
   const productId = req.body.productId;
   const productData = req.body;
+  const userId = req.user.id;
+
   try {
     const product = await productsDb.findByPk(productId);
     if (!product) {
       return res.status(404).json({ error: "Product not found!" });
+    }
+
+    const user = await Users.findByPk(userId);
+
+    if (user.role === "designer" && user.status !== "active") {
+      return res.status(400).json({
+        error: "Your account is not active. You cannot create products.",
+      });
     }
 
     await product.update(productData);
@@ -92,8 +111,21 @@ exports.updateProduct = async (req, res) => {
 };
 
 exports.deleteProduct = async (req, res, next) => {
+  const productId = req.query.productId;
+  const userId = req.user.id;
+
   try {
-    const productId = req.query.productId;
+    const product = await productsDb.findByPk(productId);
+    if (!product) {
+      return res.status(404).json({ error: "Product not found!" });
+    }
+    const user = await Users.findByPk(userId);
+
+    if (user.role === "designer" && user.status !== "active") {
+      return res.status(400).json({
+        error: "Your account is not active. You cannot create products.",
+      });
+    }
 
     await productsDb.destroy({ where: { id: productId } });
 
