@@ -16,10 +16,8 @@ exports.createProduct = async (req, res) => {
 
     const user = await Users.findByPk(userId);
 
-    if (user.role === "designer" && user.status !== "active") {
-      return res.status(400).json({
-        error: "Your account is not active. You cannot create products.",
-      });
+    if (!user) {
+      return res.status(404).json({ error: "User not found!" });
     }
 
     const product = await productsDb.create(productData);
@@ -95,13 +93,12 @@ exports.updateProduct = async (req, res) => {
 
     const user = await Users.findByPk(userId);
 
-    if (user.role === "designer" && user.status !== "active") {
-      return res.status(400).json({
-        error: "Your account is not active. You cannot create products.",
-      });
+    if (!user) {
+      return res.status(404).json({ error: "User not found!" });
     }
 
     await product.update(productData);
+
     return res
       .status(200)
       .json({ product, message: "Product updated successfully!" });
@@ -121,10 +118,8 @@ exports.deleteProduct = async (req, res, next) => {
     }
     const user = await Users.findByPk(userId);
 
-    if (user.role === "designer" && user.status !== "active") {
-      return res.status(400).json({
-        error: "Your account is not active. You cannot create products.",
-      });
+    if (!user) {
+      return res.status(404).json({ error: "User not found!" });
     }
 
     await productsDb.destroy({ where: { id: productId } });

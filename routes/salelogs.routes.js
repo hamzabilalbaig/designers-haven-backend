@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-const productController = require("../controllers/products.controllers");
+const saleLogsController = require("../controllers/salelogs.controller");
+
 const {
   isAuthenticated,
   isActiveDesigner,
@@ -11,22 +12,21 @@ router.post(
   "/create",
   isAuthenticated,
   isActiveDesigner,
-  productController.createProduct
+  saleLogsController.createSaleLog
 );
-router.get("/getAllProducts", productController.getAllProducts);
-router.get("/getProductsByBrand", productController.getProductsByBrand);
-router.get("/getProductById", productController.getProductById);
+router.get("/getAll", isAuthenticated, saleLogsController.getSaleLogs);
+router.get("/getById", isAuthenticated, saleLogsController.getSaleLogById);
 router.put(
   "/update",
   isAuthenticated,
   isActiveDesigner,
-  productController.updateProduct
+  saleLogsController.updateSaleLog
 );
 router.delete(
   "/delete",
   isAuthenticated,
   isActiveDesigner,
-  productController.deleteProduct
+  saleLogsController.deleteSaleLog
 );
 
 module.exports = router;

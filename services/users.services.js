@@ -1,22 +1,13 @@
-const bcrypt = require("bcryptjs");
 const db = require("../models");
-const jwt = require("jsonwebtoken");
-
 const { fn, col } = require("sequelize");
 
+const {
+  generateToken,
+  hashPassword,
+  comparePassword,
+} = require("../utils/auth");
+
 const userDb = db.Users;
-
-const generateToken = (payload) => {
-  const secretKey = process.env.JWT_SECRET || "your-secret-key";
-  const options = { expiresIn: process.env.JWT_EXPIRES_IN || "30d" };
-
-  return jwt.sign(payload, secretKey, options);
-};
-
-const hashPassword = async (password) => {
-  const saltRounds = 10;
-  return await bcrypt.hash(password, saltRounds);
-};
 
 exports.createUser = async (userData) => {
   if (!userData.email || !userData.password || !userData.fullName) {
@@ -63,7 +54,7 @@ exports.login = async (email, password) => {
     throw error;
   }
 
-  const passwordIsValid = bcrypt.compare(password, user.password);
+  const passwordIsValid = await comparePassword(password, user.password);
   if (!passwordIsValid) {
     const error = new Error("Invalid Password!");
     error.status = 400;

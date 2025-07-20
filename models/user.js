@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       birthdate: DataTypes.DATE,
       bio: DataTypes.TEXT,
       whatsApp: DataTypes.STRING,
+      dialingCode: DataTypes.STRING,
       insta: DataTypes.STRING,
       role: DataTypes.STRING,
       status: DataTypes.STRING,

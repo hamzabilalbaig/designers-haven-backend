@@ -5,6 +5,7 @@ const {
   hashPassword,
   comparePassword,
 } = require("../utils/auth");
+const sendEmail = require("../utils/sendEmail");
 
 const { Op } = require("sequelize");
 
@@ -43,6 +44,51 @@ exports.createUser = async (req, res) => {
     delete user.dataValues.password;
 
     const token = generateToken({ id: user.id });
+
+    await sendEmail({
+      to: user.email,
+      subject: "Welcome to Designers Haven!",
+      html: `
+    <div style="font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; color: #333;">
+      <h2 style="color: #2E3A59;">Welcome to Designer’s Haven, ${user.fullName}!</h2>
+      
+      <p>Thank you for registering with <strong>Designer’s Haven</strong>. Your account has been created successfully, and we’re excited to have you on board.</p>
+
+      <p><strong>Your User ID:</strong> ${user.id}</p>
+
+      <p>Please note that your account status is currently <strong>Pending</strong> and is awaiting admin approval. Once approved, you will be able to list your products on the platform.</p>
+
+      <p>Until your account is approved, certain features such as product listing will remain unavailable.</p>
+
+      <p>You can still log in using your email and password to explore the platform and set up your profile.</p>
+
+      <p>If you have any questions or need assistance, feel free to reach out to our support team.</p>
+
+      <p>Best regards,<br />
+      <strong>The Designers Haven Team</strong></p>
+    </div>
+  `,
+    });
+
+    await sendEmail({
+      to: "designershavenzw@gmail.com",
+      subject: "New Designer Signup – Approval Pending",
+      html: `
+      <p>Dear Admin,</p>
+
+      <p>We would like to inform you that a new designer has just signed up on the platform. Their account status is currently marked as <strong>Pending Approval</strong>.</p>
+
+      <p><strong>Designer Details:</strong><br />
+      - <strong>Name:</strong> ${user.fullName}<br />
+      - <strong>Email:</strong> ${user.email}<br />
+      - <strong>Signup Date:</strong> ${user.createdAt}</p>
+
+      <p>Please review their profile and take the necessary action to approve or reject the request as appropriate.</p>
+
+      <p>Best regards,<br />
+      Designer’s Haven Team</p>
+    `,
+    });
 
     return res
       .status(200)
@@ -141,6 +187,43 @@ exports.updateUser = async (req, res, next) => {
   try {
     const userId = req.body.userId;
     const userData = req.body;
+
+    const user = await userDb.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found!" });
+    }
+
+    if (userData.status && userData.status !== user.status) {
+      if (userData.status === "active") {
+        await sendEmail({
+          to: user.email,
+          subject: "Your Designer Account is Approved!",
+          html: `
+          <div style="font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; color: #333;">
+            <h2 style="color: #2E3A59;">Congratulations, ${user.fullName}!</h2>
+            <p>Your designer account has been approved. You can now start listing your products on Designer’s Haven.</p>
+            <p>Thank you for being a part of our community!</p>
+            <p>Best regards,<br />
+            The Designers Haven Team</p>
+          </div>
+        `,
+        });
+      } else if (userData.status === "inactive") {
+        await sendEmail({
+          to: user.email,
+          subject: "Your Designer Account Application is Rejected",
+          html: `
+          <div style="font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; color: #333;">
+            <h2 style="color: #2E3A59;">Hello ${user.fullName},</h2>
+            <p>We regret to inform you that your designer account application has been rejected. If you have any questions or need further clarification, please feel free to reach out to us.</p>
+            <p>Thank you for your understanding.</p>
+            <p>Best regards,<br />
+            The Designers Haven Team</p>
+          </div>
+        `,
+        });
+      }
+    }
 
     const updatedUser = await userService.updateUser(userId, userData);
 

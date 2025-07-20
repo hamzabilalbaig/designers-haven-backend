@@ -70,3 +70,19 @@ exports.isAdmin = async (req, res, next) => {
     });
   }
 };
+
+exports.isActiveDesigner = async (req, res, next) => {
+  try {
+    const user = req.user;
+
+    if (user.role === "designer" && user.status !== "active") {
+      return res.status(403).json({
+        error: "Your account is not active. You cannot perform this action.",
+      });
+    }
+
+    next();
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
