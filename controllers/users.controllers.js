@@ -51,45 +51,45 @@ exports.createUser = async (req, res) => {
       to: user.email,
       subject: "Welcome to Designers Haven!",
       html: `
-    <div style="font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; color: #333;">
-      <h2 style="color: #2E3A59;">Welcome to Designer’s Haven, ${user.fullName}!</h2>
-      
-      <p>Thank you for registering with <strong>Designer’s Haven</strong>. Your account has been created successfully, and we’re excited to have you on board.</p>
+      <div style="font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; color: #333;">
+        <h2 style="color: #2E3A59;">Welcome to Designer’s Haven, ${user.fullName}!</h2>
 
-      <p><strong>Your User ID:</strong> ${user.id}</p>
+        <p>Thank you for registering with <strong>Designer’s Haven</strong>. Your account has been created successfully, and we’re excited to have you on board.</p>
 
-      <p>Please note that your account status is currently <strong>Pending</strong> and is awaiting admin approval. Once approved, you will be able to list your products on the platform.</p>
+        <p><strong>Your User ID:</strong> ${user.id}</p>
 
-      <p>Until your account is approved, certain features such as product listing will remain unavailable.</p>
+        <p>Please note that your account status is currently <strong>Pending</strong> and is awaiting admin approval. Once approved, you will be able to list your products on the platform.</p>
 
-      <p>You can still log in using your email and password to explore the platform and set up your profile.</p>
+        <p>Until your account is approved, certain features such as product listing will remain unavailable.</p>
 
-      <p>If you have any questions or need assistance, feel free to reach out to our support team.</p>
+        <p>You can still log in using your email and password to explore the platform and set up your profile.</p>
 
-      <p>Best regards,<br />
-      <strong>The Designers Haven Team</strong></p>
-    </div>
-  `,
+        <p>If you have any questions or need assistance, feel free to reach out to our support team.</p>
+
+        <p>Best regards,<br />
+        <strong>The Designers Haven Team</strong></p>
+      </div>
+    `,
     });
 
     await sendEmail({
       to: "designershavenzw@gmail.com",
       subject: "New Designer Signup – Approval Pending",
       html: `
-      <p>Dear Admin,</p>
+        <p>Dear Admin,</p>
 
-      <p>We would like to inform you that a new designer has just signed up on the platform. Their account status is currently marked as <strong>Pending Approval</strong>.</p>
+        <p>We would like to inform you that a new designer has just signed up on the platform. Their account status is currently marked as <strong>Pending Approval</strong>.</p>
 
-      <p><strong>Designer Details:</strong><br />
-      - <strong>Name:</strong> ${user.fullName}<br />
-      - <strong>Email:</strong> ${user.email}<br />
-      - <strong>Signup Date:</strong> ${user.createdAt}</p>
+        <p><strong>Designer Details:</strong><br />
+        - <strong>Name:</strong> ${user.fullName}<br />
+        - <strong>Email:</strong> ${user.email}<br />
+        - <strong>Signup Date:</strong> ${user.createdAt}</p>
 
-      <p>Please review their profile and take the necessary action to approve or reject the request as appropriate.</p>
+        <p>Please review their profile and take the necessary action to approve or reject the request as appropriate.</p>
 
-      <p>Best regards,<br />
-      Designer’s Haven Team</p>
-    `,
+        <p>Best regards,<br />
+        Designer’s Haven Team</p>
+      `,
     });
 
     return res
@@ -155,14 +155,7 @@ exports.getDesignerById = async (req, res) => {
 
     const designer = await userDb.findByPk(designerId, {
       attributes: {
-        exclude: [
-          "password",
-          "createdAt",
-          "updatedAt",
-          "birthdate",
-          "role",
-          "phone",
-        ],
+        exclude: ["password", "createdAt", "updatedAt", "birthdate", "role"],
       },
       include: [
         {

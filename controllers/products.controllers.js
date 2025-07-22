@@ -5,6 +5,8 @@ const db = require("../models");
 const productsDb = db.Products;
 const Users = db.Users;
 
+const sendEmail = require("../utils/sendEmail");
+
 exports.createProduct = async (req, res) => {
   const productData = req.body;
   const userId = req.user.id;
@@ -67,7 +69,14 @@ exports.getProductById = async (req, res) => {
         {
           model: db.Users,
           as: "store",
-          attributes: ["id", "fullName", "email", "avatar", "whatsApp"],
+          attributes: [
+            "id",
+            "fullName",
+            "email",
+            "avatar",
+            "whatsApp",
+            "dialingCode",
+          ],
         },
       ],
     });
