@@ -19,7 +19,8 @@ exports.createUser = async (req, res) => {
       !userData.email ||
       !userData.password ||
       !userData.fullName ||
-      !userData.role
+      !userData.role ||
+      !userData.whatsApp
     ) {
       res.status(400).json({ error: "Required fields are missing!" });
       return;
@@ -27,6 +28,7 @@ exports.createUser = async (req, res) => {
 
     userData.email = userData.email.toLowerCase();
     userData.role = userData.role.toLowerCase();
+    userData.whatsApp = userData.whatsApp.replace(/\D/g, "");
 
     const emailExists = await userDb.findOne({
       where: { email: userData.email },
@@ -224,6 +226,10 @@ exports.updateUser = async (req, res, next) => {
         });
       }
     }
+
+    userData.whatsApp = userData.whatsApp
+      ? userData.whatsApp.replace(/\D/g, "")
+      : null;
 
     const updatedUser = await userService.updateUser(userId, userData);
 

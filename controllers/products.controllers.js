@@ -97,6 +97,36 @@ exports.updateProduct = async (req, res) => {
       return res.status(404).json({ error: "User not found!" });
     }
 
+    if (productData.status && productData.status !== product.status) {
+      if (productData.status === "active") {
+        await sendEmail({
+          to: user.email,
+          subject: `Your product "${product.name}" is Approved!`,
+          html: `
+            <div style="font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; color: #333;">
+            <h2 style="color: #2E3A59;">Congratulations, ${user.fullName}!</h2>
+            <p>Your product "${product.name}" has been approved and is now active.</p>
+            <p>Thank you for being a part of our community!</p>
+            <p>Best regards,<br />
+            The Designers Haven Team</p>
+          </div>
+          `,
+        });
+      } else if (productData.status === "inactive") {
+        await sendEmail({
+          to: user.email,
+          subject: `Your product "${product.name}" is Inactive!`,
+          html: `
+            <div style="font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; color: #333;">
+            <h2 style="color: #2E3A59;">Hello, ${user.fullName}!</h2>
+            <p>We regret to inform you that your product "${product.name}" is now inactive.</p>
+            <p>If you have any questions or need assistance, please contact us.</p>
+          </div>
+          `,
+        });
+      }
+    }
+
     await product.update(productData);
 
     return res
