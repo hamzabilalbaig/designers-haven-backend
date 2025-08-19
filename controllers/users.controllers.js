@@ -161,6 +161,8 @@ exports.getDesignerById = async (req, res) => {
         {
           model: db.Products,
           as: "products",
+          where: { status: "active" },
+          required: false,
           attributes: {
             exclude: ["createdAt", "updatedAt", "deletedAt"],
           },
