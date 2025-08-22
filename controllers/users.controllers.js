@@ -224,7 +224,7 @@ exports.updateUser = async (req, res, next) => {
 
     userData.whatsApp = userData.whatsApp
       ? userData.whatsApp.replace(/\D/g, "")
-      : null;
+      : user.whatsApp;
 
     const updatedUser = await userService.updateUser(userId, userData);
 

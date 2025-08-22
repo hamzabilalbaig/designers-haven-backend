@@ -1,10 +1,16 @@
 {
   "development": {
     "username": "postgres",
-    "password": "waq10001",
+    "password": "Designerpln$123",
     "database": "designers-haven",
-    "host": "localhost",
-    "dialect": "postgres"
+    "host": "designerhaven.cj4ecyqaq0c8.eu-north-1.rds.amazonaws.com",
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
   },
   "test": {
     "username": "root",
